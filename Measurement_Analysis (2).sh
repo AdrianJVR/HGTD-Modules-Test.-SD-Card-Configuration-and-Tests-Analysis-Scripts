@@ -66,8 +66,17 @@ Bump_Connection () {
   bump='bump'
   bumpname="${bump}_${yourMeasurementName}"
   echo $bumpname
+  read -p "If you want to disable chip 0 type '0'. If you want to disable chip 1 type '1'. If you want to test both chips type any other key." h
+  if [ $h == 0 ]; then
   sshpass -p $SD ssh -t user@$m "cd ~/FADA/firmware/FastFADA2ASIC;
+                                 source check_bump_connection_manual.sh $bumpname $Pow '--disable 0'"
+  elif [ $h == 1 ]; then
+  sshpass -p $SD ssh -t user@$m "cd ~/FADA/firmware/FastFADA2ASIC;
+                                 source check_bump_connection_manual.sh $bumpname $Pow '--disable 1'"
+  else
+   sshpass -p $SD ssh -t user@$m "cd ~/FADA/firmware/FastFADA2ASIC;
                                  source check_bump_connection_manual.sh $bumpname $Pow"
+  fi
   mkdir -p $Measurement_Path/"$yourMeasurementName"/bumpConnection
   cd FADA/software/analysis/FastFadaAnalysis
   python3 makeEffCurve.py --module --input $home/$Measurement_Path/Measurements2ASIC/bump_"$yourMeasurementName"_Hv$Pow1/thresScan/B_22_On_col_Inj_col_N_20_Q_38/ --prefix HV_"$Pow1"_Q_38 --output-dir $home/$Measurement_Path/"$yourMeasurementName"/bumpConnection
@@ -133,7 +142,7 @@ echo "For 'Tuning a module' type '2'."
 echo "Type any other key to cancel and exit." 
 read x
 case $x in 
-	[1] ) echo ""
+   	[1] ) echo ""
 	      echo "You have chosen a Bump connection test."
 	      read -p "Type '1' if you want a 'High Voltage OFF' Bump Connection test. Type 2 if you want a 'High Voltage ON' one. Type 3 to analize. Type any other key to cancel.:" y  
 	      if [ $y == 1 ]; then
@@ -246,7 +255,3 @@ case $x in
 	     exit;;
 esac
 done
-
-	        
-
-
